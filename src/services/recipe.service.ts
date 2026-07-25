@@ -13,18 +13,51 @@ export async function createRecipe(data: CreateRecipeInput) {
         await imageQueue.add("process-image", {
             recipeId: recipe.id,
             imagePath: recipe.imageUrl,
-            fileName: recipe.imageUrl,
-        });
+            fileName: recipe.imageUrl
+        })
     }
     return recipe;
 }
 
-export async function getAllRecipes(){
-    return await prisma.recipe.findMany({
+export async function getAllRecipes(
+    page: number,
+    limit: number,
+    status?: string,
+    sortBy: string = "createdAt",
+    order: "asc" | "desc" = "desc",
+    search?: string
+){
+    const recipes = await prisma.recipe.findMany({
+        where: {
+            ...(status && { status }),
+            ...(search && {
+                title: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            }),
+        },
+        skip: (page - 1) * limit,
+        take: limit,
         orderBy: {
-            createdAt: "desc"
+            [sortBy]: order
         }
     })
+    const totalRecipes = await prisma.recipe.count({
+        where: {
+            ...(status && { status }),
+            ...(search && {
+                title: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            }),
+        },
+    })
+    return {
+        recipes,
+        totalRecipes,
+    };
 }
 
 export async function getRecipeById(id: number){
@@ -36,14 +69,66 @@ export async function getRecipeById(id: number){
 }
 
 
-export async function updateRecipe(id: number, data: UpdateRecipeInput){
-    return await prisma.recipe.update({
+export async function updateRecipe(id: number, data: UpdateRecipeInput) {
+    const existingRecipe = await prisma.recipe.findUnique({
         where: {
-            id
+            id,
         },
-        data
     })
+    if (!existingRecipe) {
+        return null
+    }
+    if (data.imageUrl && existingRecipe.imageUrl) {
+        try {
+            await fs.unlink(
+                path.join(process.cwd(), "uploads", "originals", existingRecipe.imageUrl)
+            );
+        } catch (error) {
+            console.error("Failed to delete original image:", error);
+        }
+    }
+    if (existingRecipe.processedImage) {
+        try {
+            await fs.unlink(
+                path.join(process.cwd(), existingRecipe.processedImage)
+            );
+        } catch (error) {
+            console.error("Failed to delete processed image:", error);
+        }
+    }
+    if (existingRecipe.thumbnailImage) {
+        try {
+            await fs.unlink(
+                path.join(process.cwd(), existingRecipe.thumbnailImage)
+            );
+        } catch (error) {
+            console.error("Failed to delete thumbnail image:", error);
+        }
+    }
+
+    const updatedRecipe = await prisma.recipe.update({
+        where: {
+            id,
+        },
+        data: {
+            ...data,
+            processedImage: null,
+            thumbnailImage: null,
+            status: "pending",
+        },
+    })
+
+    if (updatedRecipe.imageUrl) {
+        await imageQueue.add("process-image", {
+            recipeId: updatedRecipe.id,
+            imagePath: updatedRecipe.imageUrl,
+            fileName: updatedRecipe.imageUrl
+        })
+    }
+
+    return updatedRecipe;
 }
+
 
 
 export async function deleteRecipe(id: number) {

@@ -22,11 +22,32 @@ export async function createRecipeController(req: Request, res: Response){
 
 export async function getAllRecipesController(req: Request, res: Response) {
     try{
-        const recipes = await getAllRecipes();
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 10))
+        const status = req.query.status as string | undefined
+        const search = req.query.search as string | undefined;
+        const allowedSortFields = ["title", "createdAt", "status"] as const;
+
+        const sortBy = allowedSortFields.includes(
+            req.query.sortBy as (typeof allowedSortFields)[number]
+        )
+            ? (req.query.sortBy as (typeof allowedSortFields)[number])
+            : "createdAt";
+
+        const order = req.query.order === "asc" ? "asc" : "desc";
+        const { recipes, totalRecipes } = await getAllRecipes(page, limit, status, sortBy, order, search);
         return res.status(200).json({
             success: true,
             data: recipes,
-        });
+            pagination: {
+                currentPage: page,
+                limit,
+                totalRecipes,
+                totalPages: Math.ceil(totalRecipes / limit),
+                hasNextPage: page < Math.ceil(totalRecipes / limit),
+                hasPreviousPage: page > 1
+            }
+        })
     } catch(err: any){
         return res.status(500).json({
             success: false,
