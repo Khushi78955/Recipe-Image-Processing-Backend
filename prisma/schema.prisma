@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Recipe {
+  id                Int         @id @default(autoincrement())
+  title             String
+  ingredients       Json
+  steps             Json
+  originalImage     String?
+  processedImage    String?
+  thumbnail         String?
+  status            String      @default("pending")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
