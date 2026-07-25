@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { createRecipeController, getAllRecipesController, getRecipeByIdController, updateRecipeController, deleteRecipeController } from "../controllers/recipe.controller.js";
 import { upload } from "../middleware/upload.middleware.js";
-import { processImage } from "../services/image.service.js";
 
 const router = Router();
 
@@ -19,17 +18,11 @@ router.post(
                 });
             }
 
-            const result = await processImage(
-                req.file.path,
-                req.file.filename
-            );
 
-            return res.status(200).json({
+            return res.status(202).json({
                 success: true,
-                message: "Image uploaded and processed successfully",
-                original: req.file.path,
-                processed: result.processedPath,
-                thumbnail: result.thumbnailPath,
+                message: "Image uploaded successfully",
+                fileName: req.file.filename,
             });
         } catch (error) {
             console.error(error);

@@ -1,10 +1,19 @@
 import prisma from "../config/db.js";
 import type {CreateRecipeInput, UpdateRecipeInput} from "../validators/recipe.validator.js";
+import { imageQueue } from "../queues/image.queue.js";
 
 export async function createRecipe(data: CreateRecipeInput) {
-    return await prisma.recipe.create({
-        data
-    })
+    const recipe = await prisma.recipe.create({
+        data,
+    });
+    if (recipe.imageUrl) {
+        await imageQueue.add("process-image", {
+            recipeId: recipe.id,
+            imagePath: recipe.imageUrl,
+            fileName: recipe.imageUrl,
+        });
+    }
+    return recipe;
 }
 
 export async function getAllRecipes(){

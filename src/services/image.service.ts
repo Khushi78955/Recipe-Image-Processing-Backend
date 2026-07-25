@@ -12,10 +12,16 @@ const thumbnailDir = path.join(process.cwd(), "uploads", "thumbnails");
     }
 });
 
-export async function processImage(imagePath: string, fileName: string) {
+export async function processImage(imageName: string, fileName: string) {
+    const originalImagePath = path.join(
+        process.cwd(),
+        "uploads",
+        "originals",
+        imageName
+    );
     const processedPath = path.join(processedDir, fileName);
     const thumbnailPath = path.join(thumbnailDir, fileName);
-    await sharp(imagePath)
+    await sharp(originalImagePath)
         .resize({
             width: 1200,
             withoutEnlargement: true,
@@ -25,8 +31,8 @@ export async function processImage(imagePath: string, fileName: string) {
         })
         .toFile(processedPath);
 
-        
-    await sharp(imagePath)
+
+    await sharp(originalImagePath)
         .resize(200, 200)
         .jpeg({
             quality: 80,
@@ -35,6 +41,6 @@ export async function processImage(imagePath: string, fileName: string) {
 
     return {
         processedPath,
-        thumbnailPath,
-    };
+        thumbnailPath
+    }
 }
