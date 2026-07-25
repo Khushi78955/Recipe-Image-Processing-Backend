@@ -52,7 +52,19 @@ const router = Router();
  *         description: Sort order
  *     responses:
  *       200:
- *         description: Recipes retrieved successfully
+ *          description: Recipes retrieved successfully
+ *           content:
+ *          application/json:
+ *                schema:
+ *                type: object
+ *                properties:
+ *                    success:
+ *                    type: boolean
+ *                    example: true
+ *                    data:
+ *                    type: array
+ *                    items:
+ *                        $ref: "#/components/schemas/Recipe"
  */
 
 
@@ -84,10 +96,20 @@ const router = Router();
  *                 type: string
  *                 example: 1785008629532-zgg1r0rj4bc.jpeg
  *     responses:
- *       201:
- *         description: Recipe created successfully
- *       400:
- *         description: Invalid request
+ *            201:
+ *                description: Recipe created successfully
+ *                content:
+ *                application/json:
+ *                    schema:
+ *                    type: object
+ *                    properties:
+ *                        success:
+ *                        type: boolean
+ *                        example: true
+ *                        data:
+ *                        $ref: "#/components/schemas/Recipe"
+ *            400:
+ *                description: Invalid request
  */
 
 
@@ -134,10 +156,21 @@ const router = Router();
  *           type: integer
  *         description: Recipe ID
  *     responses:
- *       200:
- *         description: Recipe retrieved successfully
- *       404:
- *         description: Recipe not found
+ *         200:
+ *           description: Recipe retrieved successfully
+ *           content:
+ *          application/json:
+ *                schema:
+ *                type: object
+ *                properties:
+ *                    success:
+ *                  type: boolean
+ *                   type: boolean
+ *                    example: true
+ *                    data:
+ *                    $ref: "#/components/schemas/Recipe"
+ *        404:
+ *            description: Recipe not found
  */
 
 
@@ -170,10 +203,20 @@ const router = Router();
  *               imageUrl:
  *                 type: string
  *     responses:
- *       200:
- *         description: Recipe updated successfully
- *       404:
- *         description: Recipe not found
+ *            200:
+ *                description: Recipe updated successfully
+ *                content:
+ *                application/json:
+ *                    schema:
+ *                    type: object
+ *                    properties:
+ *                        success:
+ *                        type: boolean
+ *                        example: true
+ *                        data:
+ *                        $ref: "#/components/schemas/Recipe"
+ *            404:
+ *                description: Recipe not found
  */
 
 
