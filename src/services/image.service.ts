@@ -40,7 +40,7 @@ export async function processImage(imageName: string, fileName: string) {
         .toFile(thumbnailPath);
 
     return {
-        processedPath,
-        thumbnailPath
+        processedPath: path.join("uploads", "processed", fileName),
+        thumbnailPath: path.join("uploads", "thumbnails", fileName)
     }
 }

@@ -6,28 +6,22 @@ node_modules/
 .env.test.local
 .env.production.local
 
-
 dist/
-
 
 logs/
 *.log
 npm-debug.log*
 
-
 uploads/*
-processed/*
-
-
 !uploads/.gitkeep
-!processed/.gitkeep
-
+!uploads/originals/.gitkeep
+!uploads/processed/.gitkeep
+!uploads/thumbnails/.gitkeep
 
 .vscode/
 
-
 .DS_Store
 
-
 coverage/
+
 /src/generated/prisma

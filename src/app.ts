@@ -1,8 +1,14 @@
 import express from "express";
-const app = express();
-app.use(express.json());
+import path from "path";
 
 import recipeRoutes from "./routes/recipe.routes.js";
+
+const app = express();
+
+app.use(express.json());
+
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.get("/", (req, res) => {
     res.send("Recipe Image Processing Backend API");
