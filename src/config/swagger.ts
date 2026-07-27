@@ -58,6 +58,43 @@ const options: swaggerJsdoc.Options = {
                         },
                     },
                 },
+                
+                CreateRecipeRequest: {
+                    type: "object",
+                    required: ["title", "description", "imageUrl"],
+                    properties: {
+                        title: {
+                            type: "string",
+                            example: "Chicken Curry",
+                        },
+                        description: {
+                            type: "string",
+                            example: "Delicious homemade chicken curry.",
+                        },
+                        imageUrl: {
+                            type: "string",
+                            example: "1785008629532-zgg1r0rj4bc.jpeg",
+                        },
+                    },
+                },
+
+                UpdateRecipeRequest: {
+                    type: "object",
+                    properties: {
+                        title: {
+                            type: "string",
+                            example: "Updated Chicken Curry",
+                        },
+                        description: {
+                            type: "string",
+                            example: "Even more delicious.",
+                        },
+                        imageUrl: {
+                            type: "string",
+                            example: "1785008629532-zgg1r0rj4bc.jpeg",
+                        },
+                    },
+                },
             },
         },
     },

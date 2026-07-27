@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { createRecipeController, getAllRecipesController, getRecipeByIdController, updateRecipeController, deleteRecipeController } from "../controllers/recipe.controller.js";
+import {
+  createRecipeController,
+  getAllRecipesController,
+  getRecipeByIdController,
+  updateRecipeController,
+  deleteRecipeController,
+} from "../controllers/recipe.controller.js";
 import { upload } from "../middleware/upload.middleware.js";
 
 const router = Router();
@@ -52,20 +58,22 @@ const router = Router();
  *         description: Sort order
  *     responses:
  *       200:
- *          description: Recipes retrieved successfully
- *           content:
- *          application/json:
- *                schema:
- *                type: object
- *                properties:
- *                    success:
- *                    type: boolean
- *                    example: true
- *                    data:
- *                    type: array
- *                    items:
- *                        $ref: "#/components/schemas/Recipe"
+ *         description: Recipes retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: "#/components/schemas/Recipe"
  */
+
+
 
 
 /**
@@ -80,37 +88,25 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - title
- *               - description
- *               - imageUrl
- *             properties:
- *               title:
- *                 type: string
- *                 example: Chicken Curry
- *               description:
- *                 type: string
- *                 example: Delicious homemade chicken curry.
- *               imageUrl:
- *                 type: string
- *                 example: 1785008629532-zgg1r0rj4bc.jpeg
+ *             $ref: "#/components/schemas/CreateRecipeRequest"
  *     responses:
- *            201:
- *                description: Recipe created successfully
- *                content:
- *                application/json:
- *                    schema:
- *                    type: object
- *                    properties:
- *                        success:
- *                        type: boolean
- *                        example: true
- *                        data:
- *                        $ref: "#/components/schemas/Recipe"
- *            400:
- *                description: Invalid request
+ *       201:
+ *         description: Recipe created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: "#/components/schemas/Recipe"
+ *       400:
+ *         description: Invalid request
  */
+
+
 
 
 /**
@@ -141,6 +137,7 @@ const router = Router();
 
 
 
+
 /**
  * @swagger
  * /api/v1/recipes/{id}:
@@ -156,21 +153,20 @@ const router = Router();
  *           type: integer
  *         description: Recipe ID
  *     responses:
- *         200:
- *           description: Recipe retrieved successfully
- *           content:
- *          application/json:
- *                schema:
- *                type: object
- *                properties:
- *                    success:
- *                  type: boolean
+ *       200:
+ *         description: Recipe retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
  *                   type: boolean
- *                    example: true
- *                    data:
- *                    $ref: "#/components/schemas/Recipe"
- *        404:
- *            description: Recipe not found
+ *                   example: true
+ *                 data:
+ *                   $ref: "#/components/schemas/Recipe"
+ *       404:
+ *         description: Recipe not found
  */
 
 
@@ -194,30 +190,24 @@ const router = Router();
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               imageUrl:
- *                 type: string
+ *             $ref: "#/components/schemas/UpdateRecipeRequest"
  *     responses:
- *            200:
- *                description: Recipe updated successfully
- *                content:
- *                application/json:
- *                    schema:
- *                    type: object
- *                    properties:
- *                        success:
- *                        type: boolean
- *                        example: true
- *                        data:
- *                        $ref: "#/components/schemas/Recipe"
- *            404:
- *                description: Recipe not found
+ *       200:
+ *         description: Recipe updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: "#/components/schemas/Recipe"
+ *       404:
+ *         description: Recipe not found
  */
+
 
 
 /**
@@ -241,37 +231,31 @@ const router = Router();
  *         description: Recipe not found
  */
 
-
 router.post("/", createRecipeController);
 router.get("/", getAllRecipesController);
-router.post(
-    "/upload",
-    upload.single("image"),
-    async (req, res) => {
-        try {
-            if (!req.file) {
-                return res.status(400).json({
-                    success: false,
-                    message: "No image uploaded",
-                });
-            }
-
-
-            return res.status(202).json({
-                success: true,
-                message: "Image uploaded successfully",
-                fileName: req.file.filename,
-            });
-        } catch (error) {
-            console.error(error);
-
-            return res.status(500).json({
-                success: false,
-                message: "Failed to process image",
-            });
-        }
+router.post("/upload", upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No image uploaded",
+      });
     }
-);
+
+    return res.status(202).json({
+      success: true,
+      message: "Image uploaded successfully",
+      fileName: req.file.filename,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process image",
+    });
+  }
+});
 router.get("/:id", getRecipeByIdController);
 router.put("/:id", updateRecipeController);
 router.delete("/:id", deleteRecipeController);
