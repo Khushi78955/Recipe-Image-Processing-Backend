@@ -1,11 +1,13 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 import app from "./app.js";
 import "./config/redis.js";
 import "./workers/image.worker.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
+import { env } from "./config/env.js";
 
-const PORT = process.env.PORT || 3000;
+const PORT = env.PORT || 3000;
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -27,6 +27,14 @@ export const imageWorker = new Worker(
 
         console.log(`Finished job ${job.id}`);
     } catch (error) {
+        await prisma.recipe.update({
+            where: {
+                id: job.data.recipeId,
+            },
+            data: {
+                status: "failed",
+            },
+        })        
         console.error("Worker error:", error);
     }
 },

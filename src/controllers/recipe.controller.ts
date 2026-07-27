@@ -11,8 +11,15 @@ export async function createRecipeController(req: Request, res: Response){
             message: "Recipe created successfully",
             data: recipe,
         })
-    } catch(err: any){
-        return res.status(400).json({
+    } catch (err: any) {
+        if (err.name === "ZodError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
+        }
+
+        return res.status(500).json({
             success: false,
             message: err.message,
         });
@@ -48,7 +55,14 @@ export async function getAllRecipesController(req: Request, res: Response) {
                 hasPreviousPage: page > 1
             }
         })
-    } catch(err: any){
+    } catch (err: any) {
+        if (err.name === "ZodError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: err.message,
@@ -60,6 +74,12 @@ export async function getAllRecipesController(req: Request, res: Response) {
 export async function getRecipeByIdController(req: Request, res: Response) {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid recipe id",
+            });
+        }
         const recipe = await getRecipeById(id);
         if (!recipe) {
             return res.status(404).json({
@@ -72,6 +92,13 @@ export async function getRecipeByIdController(req: Request, res: Response) {
             data: recipe,
         })
     } catch (err: any) {
+        if (err.name === "ZodError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: err.message,
@@ -84,15 +111,34 @@ export async function getRecipeByIdController(req: Request, res: Response) {
 export async function updateRecipeController(req: Request, res: Response) {
     try {
         const id = Number(req.params.id);
+        if (isNaN(id)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid recipe id",
+        });
+}
         const validatedData = updateRecipeSchema.parse(req.body);
         const recipe = await updateRecipe(id, validatedData);
+        if (!recipe) {
+            return res.status(404).json({
+                success: false,
+                message: "Recipe not found",
+            });
+        }
         return res.status(200).json({
             success: true,
             message: "Recipe updated successfully",
             data: recipe,
         });
     } catch (err: any) {
-        return res.status(400).json({
+        if (err.name === "ZodError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
+        }
+
+        return res.status(500).json({
             success: false,
             message: err.message,
         });
@@ -110,15 +156,28 @@ export async function deleteRecipeController(req: Request, res: Response) {
                 message: "Invalid recipe id",
             })
         }
-        await deleteRecipe(id);
+        const recipe = await deleteRecipe(id);
+        if (!recipe) {
+            return res.status(404).json({
+                success: false,
+                message: "Recipe not found",
+            });
+        }
         return res.status(200).json({
             success: true,
             message: "Recipe deleted successfully",
         })
     } catch (err: any) {
+        if (err.name === "ZodError") {
+            return res.status(400).json({
+                success: false,
+                message: err.message,
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: err.message,
-        })
+        });
     }
 }
